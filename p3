@@ -1,0 +1,66 @@
+      #3.3  Tabulado de las variables etiquetadas
+wtd.table(SDEMT215$POS_OCU, SDEMT215$SEXO, weights=SDEMT215$FAC)
+
+
+#4. Recodificar 
+      
+      #4.1  Recodificion de variables numericas (rangos)
+     
+            #Metodo 1
+            attach(SDEMT215)
+                        SDEMT215$EDAD11[as.numeric(EDA) >= 0 & as.numeric(EDA)<=10] <- 1
+                        SDEMT215$EDAD11[as.numeric(EDA) >= 11 & as.numeric(EDA)<=20] <- 2
+                        SDEMT215$EDAD11[as.numeric(EDA) >= 21 & as.numeric(EDA)<=30] <- 3
+                        SDEMT215$EDAD11[as.numeric(EDA) >= 31 & as.numeric(EDA)<=40] <- 4
+                        SDEMT215$EDAD11[as.numeric(EDA) >= 41] <- 5          
+            detach(SDEMT215) 
+            
+            #Metodo3
+            attach(SDEMT215)
+            SDEMT215$EDAD111 <- ifelse(as.numeric(EDA) >= 0 & as.numeric(EDA)<=10,1,
+                                       ifelse(as.numeric(EDA) >= 11 & as.numeric(EDA)<=20,2,
+                                              ifelse(as.numeric(EDA) >= 21 & as.numeric(EDA)<=30,3,
+                                                     ifelse(as.numeric(EDA) >= 31 & as.numeric(EDA)<=40,4,5))))
+            
+detach(SDEMT215) 
+
+
+
+#4.1  Recodificion de variables tipo caracter
+            
+                  attach(SDEMT215)
+                  SDEMT215$VALIDO[as.character(R_DEF)!="00"] <- "Entrevista completa"
+                  SDEMT215$VALIDO[as.character(R_DEF)=="00"] <- "Entrevista incompleta"
+                  detach(SDEMT215)
+                  
+wtd.table(SDEMT215$VALIDO)
+
+
+#5. Subconjunto de datos
+
+      #5.1  Seleccionando variables de interes
+            #Metodo 1
+            var<-c("R_DEF", "LOC", "MUN","C_RES")
+newdata1 <- SDEMT215[,var]
+
+
+#5.2  Excluyendo variables  
+            newdata2 <- SDEMT215[,!var0]
+            
+      #5.3 Seleccionar casos          
+            newdata3 <- SDEMT215[ which(SDEMT215$SEXO=='Hombre'& as.numeric(SDEMT215$EDA) <18), ]
+
+            # Ejemplo de un filtro necesario en la ENOE
+            newdata4 <- SDEMT215[ which(as.character(SDEMT215$R_DEF)=='00'& (as.numeric(SDEMT215$C_RES)==1 | as.numeric(SDEMT215$C_RES)==3)), ]
+
+
+
+#5.4  Seleccionar variables y casos
+      
+            #Ejemplo: De la base SDEMT215 solo considero:
+                      #i)    residentes habituales 
+                      #ii)   entrevista completa
+                      #iii)  solo considero las variables: SEXO, CS_P17, POS_OCU
+                      
+            
+            newdata4 <- SDEMT215[which(as.character(SDEMT215$R_DEF)=='00'& (as.numeric(SDEMT215$C_RES)=="1" | as.numeric(SDEMT215$C_RES)=="3")), c("SEX", "CS_P17", "POS_OCU")]
