@@ -2,17 +2,27 @@
 sample (10000, 35)
 help (sample)
 
+#  Conocer la ENOE desde R (etiquetar, recodificar y seleccionar casos).
 
-###### vamos a crear una pequeña base de datos####
-### 4 variable: nombre, edad, sexo, tipo de educación ######
+####################################################################################################
 
-nombres <- c ("sergio", "alan","betzabeth", "judith", "rodrigo", 
-              "eric", "diego", "angel")
-edad <- c(36, 20, 23, 20, 21, 21, 22, 21)
-sexo <- c("hombre", "hombre", "mujer", "mujer", "hombre", "hombre",
-          "hombre","hombre")
-teduca <- c("pública", "pública", "pública", "pública", "privada", 
-            "pública", "pública", "pública")
+
+# Todas las bases de datos de la ENOE pueden ser obtenidas en la pagina de internet del INEGI.
+
+#Para llevar a cabo los ejercicios se utilizaran las siguientes bases:
+#SDEMT115.dbf
+
+#0.3  Limpiar el entorno de trabajo
+rm(list = ls())
+
+ #Ctrl + L = Limpia la consola  
+
+#0.4  Definir el directorio raiz de las bases de datos (Hay que utilizar \\ ó / para definir la ruta
+setwd("C:/sgr/Package/2/Bases")
+
+SDEMT215<-data.frame(read.dbf("SDEMT215.dbf"))
+
+### explicar la ponderacion.,...
 
 ##### generamos una base en forma de matriz
 base1 <- matrix (c(edad, nombres, sexo, teduca))
@@ -33,3 +43,54 @@ install.packages("foreign")
 require (foreign)
 sociodem <- read.dbf ("C://Users//SALA-C6//Desktop//SDEMT215.dbf")
 table (sociodem$SEX)
+
+#1. Frecuencias
+
+      #1.1  Frecuencias con datos muestrales (sin ponderar)
+            #Metodo 1
+            wtd.table(SDEMT215$POS_OCU)
+wtd.table(SDEMT215$POS_OCU,na.show = TRUE)
+
+ attach(SDEMT215)
+            table (POS_OCU)
+            table (POS_OCU,useNA = "always")
+detach(SDEMT215) 
+
+#1.2  Frecuencias con datos ponderados
+wtd.table(SDEMT215$POS_OCU,weights=SDEMT215$FAC,na.show = TRUE)
+
+
+#2.1  Tabulados con datos muestrales (sin ponderar)
+            #Metodo 1
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU)
+
+
+      
+      #2.2  Tabulados con datos ponderados
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU,weights=SDEMT215$FAC)
+
+
+
+#3.1  Etiquetar en otra variable
+            SDEMT215$SEXO <- factor(SDEMT215$SEX,levels = c(1,2),labels = c("Hombre", "Mujer"))
+            wtd.table(SDEMT215$SEXO)
+      
+      #3.2  Etiquetar en la misma variable
+            SDEMT215$POS_OCU <- factor(SDEMT215$POS_OCU,levels = c(1,2,3,4,5),labels = c("Subordinados y remunerados", "Empleadores","Cuenta propia", "Sin pago","NE"))
+            wtd.table(SDEMT215$POS_OCU)
+      
+
+
+
+###### vamos a crear una pequeña base de datos####
+### 4 variable: nombre, edad, sexo, tipo de educación ######
+
+nombres <- c ("sergio", "alan","betzabeth", "judith", "rodrigo", 
+              "eric", "diego", "angel")
+edad <- c(36, 20, 23, 20, 21, 21, 22, 21)
+sexo <- c("hombre", "hombre", "mujer", "mujer", "hombre", "hombre",
+          "hombre","hombre")
+teduca <- c("pública", "pública", "pública", "pública", "privada", 
+            "pública", "pública", "pública")
+
+
