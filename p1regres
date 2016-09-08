@@ -24,7 +24,7 @@ cor(esta, eco, method = "pearson")
 ### argumentos ####
 #1) variable depeniete
 #2) variable independiente
-#3) metodo de correlación
+#3) metodo de correlacióndd
 help (cor)
 #### revisen el help y expliquen el argumento 
 
