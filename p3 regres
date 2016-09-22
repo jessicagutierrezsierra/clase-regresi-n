@@ -5,7 +5,7 @@
 #estaturas 1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15
 ### nivel economico  110,130,108,167,156,115,104,138,170,107
 #QUEREOS COMPROBAR LA HIPOTESIS QUE ENTRE MAYOR INGRESO DE LA FAMILIA
-#HAY UNA MAYOR ESTATURA EN LOS NIÑXS
+#HAY UNA MAYOR ESTATURA EN LOS NIÃXS
 esta <- c(1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15)
 eco <- c(110,130,108,167,156,115,104,138,170,107)
 mod1 <- lm(esta~eco)
@@ -23,17 +23,21 @@ anova (mod1)
 summary(mod1)$coefficients
 #esta = .9323 + .0023 eco
 ################analiss de los coeficientes#####
-#B0 es .93 y B1 es .0023, si la variable ingreso incrementa en un peso la estatura del niño incrementa .0023 
+#B0 es .93 y B1 es .0023, si la variable ingreso incrementa en un peso la estatura del niÃ±o incrementa .0023 
 #diagnostico del modelo
+install.packages("car")
 
 base1<- data.frame(eco,esta)
-base1$fitted.mod1 <- fitted(mod1) #### valores ajustado 
-base1$residuals.mod1 <- residuals(mod1) ### residuos del modelo
+
+base1$ajuste.mod1 <- fitted(mod1) #### valores ajustado 
+base1$residuales.mod1 <- residuals(mod1) ### residuos del modelo
 base1$rstudent.mod1 <- rstudent(mod1)### residuos estudentizados
 
 ## Estas variable sse utilizan para comprobar los supuestos..
-#### supuesto de normalidad... es quue los residuos tengan una distribución normal 
-## para conocer la normalidad se utiliza la prueba de shapiro para analizar los resiudos...
+#### supuesto de normalidad... es quue los residuos tengan una 
+#distribuciÃ³n normal 
+## para conocer la normalidad se utiliza 
+#la prueba de shapiro para analizar los resiudos...
 shapiro.test (base1$rstudent.mod1)
 ## purea de hipotesis sahpiro test
 ###Ho. la muestra tienen una dist normal 
@@ -41,43 +45,58 @@ shapiro.test (base1$rstudent.mod1)
 ### teenmos un pvalue de .8172 no se rechaza la hipotesis nula
 ### por lo tanto se acepta que hay normalidad... 
 ### ahora veremos este resultado en un grafico
-qqnorm (base1$rstudent.mod1, main = "Normal (0,1)") ## se obtiene graficod de dispersion con la normal 0,1
+qqnorm (base1$rstudent.mod1, main = "Normal (0,1)")
+### se obtiene graficod de dispersion con la normal 0,1
 qqline (base1$rstudent.mod1)
 #### ahora vamos a revisar la homogeneidad de varianzas
-#### para la homogeneidad se requiere de una libreria que se llam lmtest, debido a que 
+#### para la homogeneidad se 
+#requiere de una libreria que se llam lmtest, debido a que 
 # esta se tiene que aplicar la prueba de Breusch - pagan test
 install.packages("lmtest")
 require (lmtest)
 bptest (mod1)
 ### en esta prueba esperamos que haya homogeneidad de la varianza
+#h0: si hay homogeneidaD EN las varianzas
+#ha: no hay homogeneidad en las variaanzas
+#en a prueba bptest obtenemos un pvalue de .6108
+#por lo tanto no se rechaza la hipotesis nula, 
+#es decir se acepta con 95% de confianza LA h0
 ## para eso tenemos que tener un pvalue mayor a .05, por lo que para
-#mod 1 se puede decir que hay homogeneidad en la variable
+#mod 1 se puede decir que hay homogeneidad en la varianzas
 #### prueba de autocorrelacion o independencia
 ### en este caso se utiliza la prueba de DUrbin Watson..
 ## para esta prueba se utiliza 
+require (car)
 dwtest (mod1, alternative = "two.sided")
-## en este caso al igual que los demas se acepta hipotesis nula
+# h0 :  no hay autcorreación en los residuos
+#ha: si hay autocorrelacion en los residuos 
+# la prueba durbin watson genera un resultado de p value .9142,  
+## por lo que no se rechaza la  hipotesis nula
 ## debido a que tenemos un pvalue mayor a .05... esto quiere decir 
 #que no hay autocorrelacion en los residuos... 
-### ahora vamos a comprobar esto de manera gráfica
-plot (base1$residuals.mod1, pch= 35, ylab= "residuales", xlab= "in")
+# otra forma de evauar la prueba de durbin watson es con el valor 
+# de durbin watson que se espera que este en el rango de 1.5 a 2.5
+# si esta dentro de este rango se puede decir que no hay 
+#autocorrelacion en los residuos
+### ahora vamos a comprobar esto de manera grÃ¡fica
+plot (base1$residuales.mod1, pch= 35, ylab= "residuales", xlab= "in")
 abline(h=cor (base1$esta, base1$eco))
-### en este caso se puede ver que tenemos una grafica sin relación que es
+### en este caso se puede ver que tenemos una grafica sin relaciÃ³n que es
 ## lo que estamos esperando
 ## por lo que se confirma que no hay autocorrelacion
-
-#### ya con estos datos podrías garantizar que tenemos un buen modelo y podíamos predecir 
+#### ya con estos datos podrÃ­as garantizar que tenemos un buen modelo y podÃ­amos predecir 
 ### o analizar los coeficientes...
-
 ##### como les comente en la clase pasada podriamos tener un problema de rangos 
 ## si predecimos sin considerar rangos de nuestra variable por lo que vamos a
 ## definir una nueva base con los limites
 limbase1 <- seq (min (base1$eco), max (base1$eco), length = 10)
 limbase1 <- data.frame (limbase1)
-limbasep <- predict.lm (mod1, limbase1, interval = "prediction", se.fit =TRUE, data = base1)
+limbasep <- predict.lm (mod1, limbase1, interval = "prediction",
+                        se.fit =TRUE, data = base1)
 head (limbasep$fit)### te generan los limites
 #### para dibujar los limites... 
-matplot (limbase1, limbasep$fit, type = "l", xlab = "ingres", ylab = "estatura")
+matplot (limbase1, limbasep$fit, type = "l", xlab = "ingres", 
+         ylab = "estatura")
 #### tarea investigar como incorporar etiquetas....
 ############################## 
 ### generar un ejemplo con error en normalidad
