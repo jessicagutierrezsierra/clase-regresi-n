@@ -1,0 +1,129 @@
+######################################################################33
+######################################################################
+#####################CLASE ANTERIOR ##################################3
+#########################################################################
+#estaturas 1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15
+### nivel economico  110,130,108,167,156,115,104,138,170,107
+#QUEREOS COMPROBAR LA HIPOTESIS QUE ENTRE MAYOR INGRESO DE LA FAMILIA
+#HAY UNA MAYOR ESTATURA EN LOS NIÑXS
+esta <- c(1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15)
+eco <- c(110,130,108,167,156,115,104,138,170,107)
+mod1 <- lm(esta~eco)
+### Bondad de ajuste#### 
+# con la bondad de ajuste verificamos la calidad del modelo al interpretar la variable dependiente
+#para eso se utiliza la tabla anova 
+anova (mod1)
+#en este caso la variabilidad explicada del modelo es .033022 = SSM
+### se revisa la SSR = .0031
+### revisando los valores del summary el estadistico F es mayor a 1 y p-value <.05
+## con estas revisiones se puede mencionar que se rechaza la hipotesis nula de F=1 
+# y se puede establecer un modelo
+#Revisar R2 multiple
+# alrededor del 91% de la variabilidad de la estatura  es explicada por la recta ajustada.
+summary(mod1)$coefficients
+#esta = .9323 + .0023 eco
+################analiss de los coeficientes#####
+#B0 es .93 y B1 es .0023, si la variable ingreso incrementa en un peso la estatura del niño incrementa .0023 
+#diagnostico del modelo
+
+base1<- data.frame(eco,esta)
+base1$fitted.mod1 <- fitted(mod1) #### valores ajustado 
+base1$residuals.mod1 <- residuals(mod1) ### residuos del modelo
+base1$rstudent.mod1 <- rstudent(mod1)### residuos estudentizados
+
+## Estas variable sse utilizan para comprobar los supuestos..
+#### supuesto de normalidad... es quue los residuos tengan una distribución normal 
+## para conocer la normalidad se utiliza la prueba de shapiro para analizar los resiudos...
+shapiro.test (base1$rstudent.mod1)
+## purea de hipotesis sahpiro test
+###Ho. la muestra tienen una dist normal 
+### ha : la muestra no tiene dist normal
+### teenmos un pvalue de .8172 no se rechaza la hipotesis nula
+### por lo tanto se acepta que hay normalidad... 
+### ahora veremos este resultado en un grafico
+qqnorm (base1$rstudent.mod1, main = "Normal (0,1)") ## se obtiene graficod de dispersion con la normal 0,1
+qqline (base1$rstudent.mod1)
+#### ahora vamos a revisar la homogeneidad de varianzas
+#### para la homogeneidad se requiere de una libreria que se llam lmtest, debido a que 
+# esta se tiene que aplicar la prueba de Breusch - pagan test
+install.packages("lmtest")
+require (lmtest)
+bptest (mod1)
+### en esta prueba esperamos que haya homogeneidad de la varianza
+## para eso tenemos que tener un pvalue mayor a .05, por lo que para
+#mod 1 se puede decir que hay homogeneidad en la variable
+#### prueba de autocorrelacion o independencia
+### en este caso se utiliza la prueba de DUrbin Watson..
+## para esta prueba se utiliza 
+dwtest (mod1, alternative = "two.sided")
+## en este caso al igual que los demas se acepta hipotesis nula
+## debido a que tenemos un pvalue mayor a .05... esto quiere decir 
+#que no hay autocorrelacion en los residuos... 
+### ahora vamos a comprobar esto de manera gráfica
+plot (base1$residuals.mod1, pch= 35, ylab= "residuales", xlab= "in")
+abline(h=cor (base1$esta, base1$eco))
+### en este caso se puede ver que tenemos una grafica sin relación que es
+## lo que estamos esperando
+## por lo que se confirma que no hay autocorrelacion
+
+#### ya con estos datos podrías garantizar que tenemos un buen modelo y podíamos predecir 
+### o analizar los coeficientes...
+
+##### como les comente en la clase pasada podriamos tener un problema de rangos 
+## si predecimos sin considerar rangos de nuestra variable por lo que vamos a
+## definir una nueva base con los limites
+limbase1 <- seq (min (base1$eco), max (base1$eco), length = 10)
+limbase1 <- data.frame (limbase1)
+limbasep <- predict.lm (mod1, limbase1, interval = "prediction", se.fit =TRUE, data = base1)
+head (limbasep$fit)### te generan los limites
+#### para dibujar los limites... 
+matplot (limbase1, limbasep$fit, type = "l", xlab = "ingres", ylab = "estatura")
+#### tarea investigar como incorporar etiquetas....
+############################## 
+### generar un ejemplo con error en normalidad
+
+#### 
+help (sample)
+eda1 <-  c(11, 5, 12, 6, 7)
+ing <- c(171,132,175,108,56)
+
+mod2 <- lm(ing~eda1)
+summary(mod2)$coefficients
+anova (mod2)
+base2<- data.frame(eda1,ing)
+base2$fitted.mod2 <- fitted(mod2) #### valores ajustado 
+base2$residuals.mod2 <- residuals(mod2) ### residuos del modelo
+base2$rstudent.mod2 <- rstudent(mod2)### residuos estudentizados
+
+shapiro.test (base2$rstudent.mod2)
+#### ahora vamos a revisar la grafica
+qqnorm (base2$rstudent.mod2, main = "Normal (0,1)") ## se obtiene graficod de dispersion con la normal 0,1
+qqline (base2$rstudent.mod2)
+## como se puede ver hay 2 valore atipico que se van analiza con la prueb de valores aitipicos
+## estos valores impactan en el modelo ya ue pueden alterar los coeficientes
+### si se observan v. atipicos, revisar que no se aerror, analizar si impacta en el modelo 
+### ahora para aplicar el test
+install.packages ("car")
+require (car)
+outlierTest (mod2, cutoff =.05, n.max =5, order =T)
+influencePlot(mod2, id.n = 5)
+# la observacion 2 y 5 indican con problemas 
+## ahora para confirmar los casos que tienen implicaciones en el modelo se aplica el grafico
+# de distancias de cook
+cmod2 <- cooks.distance(mod2)
+etique <- rownames(base2)
+install.packages("faraway")
+require (faraway)
+halfnorm (cmod2, labs = etique, ylab ="dist cook")
+### aqui esperariamos un dato mayor a 1 para comprobar que si es atipico
+### el numero mas alto es el 2 por lo que ahora una solucion es eliminarlo y volver aplicar
+### shapiro test
+
+
+
+
+######### nuevo modelo rest
+##pobest poblacion estudiantil (x)
+## ventrim... ventas trimestrales (y)
+pobest <- c(2,6,8,8, 12, 16, 20, 20, 22, 26)
+ventrim <- c(58,105,88,118, 117, 137, 157, 169, 149, 202)
