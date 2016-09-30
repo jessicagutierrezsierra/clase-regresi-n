@@ -1,0 +1,69 @@
+mochil$ajus.modmo <- fitted(modmo)
+mochil$res.modmo <- residuals(modmo)
+mochil$rstud.modmo <- rstudent(modmo)
+# Normalidad
+install.packages ("lmtest")
+require (lmtest)
+ks.test(mochil$rstud.modmo, "pnorm")
+#histograma
+hist(mochil$rstud.modmo, xlab = "residuales", main = "Hist residuales")
+#El p-valor para el contraste de normalidad 
+#es mayor que 0.05 (p = 0.6434) y además el 
+#histograma se parece a una distribución normal 
+#(curva en forma campana) entonces no hay problemas de normalidad.
+#homogeneidad de varianzas
+#
+bptest(modmo, studentize = FALSE, data = mochil)
+  #Significación p = 0.7166, mayor de 0.05, por lo que podemos decir 
+#que la varianza es constante a lo largo de la muestra.
+dwtest(modmo, alternative = "two.sided", data = mochil)
+#Aceptamos la hipótesis nula de que no existe correlación entre 
+#los residuos con un p-valor superior a 0.05.
+## prueba de atipicos...
+install.packages("car")
+require (car)
+outlierTest(modmo)
+#Con este análisis pretendemos ver si hay alguna observación que es
+#demasiado influyente sobre los coeficientes del modelo, 
+#nos ayuda a determinar si el modelo de regresión es estable 
+#a lo largo de la muestra o si está perjudicado por unos pocos 
+#casos influyentes.
+#Utilizamos la función influence.measures que nos proporciona todas las medidas 
+#de influencia. Explicamos, a partir de los resultados de aplicar
+#la función, cada una de las medidas:
+infl <- influence.measures(modelCirf)
+summary(infl)
+
+#1)la primera columna indica el índice de las observaciones 
+#potencialmente influyentes.
+#2)las columnas que comienzan con dfb proporcionan las observaciones
+#potencialmente influyentes sobre cada uno de los coeficientes del 
+#modelo.
+#3)la columna dffits identifica las observaciones influyentes 
+#según el estadístico DFFITS.
+#la columna cov.r muestra las observaciones potencialmente 
+#influyentes según el estadístico COVRATIO.
+#la columna cook.d proporciona la distancia de Cook .
+#la última columna presenta las observaciones que pueden resultar 
+#influyentes según los leverages.
+
+Analizamos un poco más estas medidas:
+  
+  #Los leverages (hat) varían entre 0 (indicando que el caso no tiene influencia en absoluto) 
+  #y 1 (indicando que ese caso tiene influencia completa sobre el modelo). Si ninguno de los 
+  #casos ejerce excesiva influencia sobre el modelo entonces esperaremos que todos los valores 
+  #‘leverage’ estén entorno al valor medio ((k+1)/n), donde k es el número de predictores y n el 
+  #número de participantes. Buscamos valores el doble o triple que ((k+1)/n) para considerarlos como influyentes.
+#Para la distancia de Cook se considera que valores mayores que 1 pueden ser causa de preocupación. Si un caso es 
+  #un valor atípico pero su distancia de Cook es menor que 1, entonces no existe necesidad real de eliminar este dato
+  #ya que realmente no tiene un gran efecto sobre el modelo de regresión.
+  #Lo estudiamos gráficamente. En el primer gráfico se muestra mediante círculos de distinto tamaño la influencia que 
+#cada punto ejerce sobre el modelo y en el segundo están representadas en orden ascendente las distancias de Cooks.
+influencePlot(modmo, id.n=2)
+
+# en el segundo están representadas en orden ascendente las distancias de Cooks.
+install.packages("faraway")
+require (faraway)
+dc <- cooks.distance(modmo)
+etiqueta <- rownames(mochil)
+halfnorm(dc, 3, labs = etiqueta, ylab = "Distancia de Cook")
