@@ -1,0 +1,17 @@
+#EJERCICIO TAREA
+
+#Deseamos estimar una recta de regresiÃ³n donde las v.d.
+#es la esperanza de vida femenina y las v.i. son:
+  
+ # la TMI (tasa mortalidad infantil)
+#la TGF (tasa global de fecundidad)
+#Porcentaje de hombres alfabetas (alfabmas)
+#Porcentaje de mujeres alfabetas (alfabfem)
+#Porcentaje de poblaciÃ³n urbana (urbana) 
+#PIB percapita 
+#La relaciÃ³n entre nacimientos y defunciones (nac_def)
+#La tasa de crecimiento de la poblacion (% anual)
+
+#DATOS BANCO MUNDIAL  2005 - 2015
+#MEXICO, ARGENTINA Y Brasil
+#PREGUNTAR ALEATORIO EL JUEVES no olvidar!!!!!!!!!!!!!!!
