@@ -1,0 +1,14 @@
+require (foreign)
+sdem216 <- read.dbf ("/home/sgr/Escritorio/sdemt216.dbf")
+sdem216$EDA <- as.numeric (as.character (sdem216$EDA))
+okupa <- subset (sdem216, (sdem216$CLASE2 ==1) & (sdem216$POS_OCU==1) & (sdem216$CD_A == 16) & (sdem216$EDA >=15 & sdem216$EDA <= 65))
+sdem216$EDA2 <- (sdem216$EDA) * (sdem216$EDA)
+table (okupa$INGOCUP)
+#######################3 eliminamos cero
+sdem216$INGOCUP[as.numeric(sdem216$INGOCUP) >= 30000] <- NA
+sdem216$INGOCUP[as.numeric(sdem216$INGOCUP) == 0] <- NA
+okupa$INGOCUP<- as.numeric(as.character(okupa$INGOCUP))
+okupa$EDA <- as.numeric(as.character(okupa$EDA))
+okupa$ANIOS_ESC <- as.numeric(as.character(okupa$ANIOS_ESC))
+okupa$HRSOCUP <- as.numeric(as.character(okupa$HRSOCUP))
+okupa$SEX <- as.numeric(as.character(okupa$SEX))
