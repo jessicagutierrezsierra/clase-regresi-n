@@ -1,0 +1,22 @@
+####################33 prediccion del mrm ########################
+ 
+inter <- seq(min(bolsa$uso), max(bolsa$uso), length = length(bolsa$uso))
+ inter
+ bolpred <- data.frame(gama = 2 , operacion = 2, uso = inter)
+ predi1 <- predict(mbolsa, bolpred, interval = "prediction", se.fit = TRUE, data = bolsa)
+ head(predi1$fit)
+ 
+ ### detectar multicolinealidad en el modelo... 
+ ## cuando un modelo tiene multicolinealidad en un MRM es cuando una var independiente 
+ ## es combinación lineal de otra var indep ... es decir la multicolinealidad existe en un mrm 
+ ## si hay fuerte correlación entre 2 o mas var indep ... esto es cuando tengamos un coef de 
+ ## correlacion sea 1 
+ ## para detectar esta colinealidad se estima el factor de inflación de la varianza  (VIF) 
+ ## este factor se calcula con R  a traves de la funcion vif().
+ ## para este calculo se recomiendan estos rangos 
+ ## FIV	Estado de los predictores
+## FIV = 1	No correlacionados
+##1 < FIV < 5	Moderadamente correlacionados
+##FIV > 5 a 10	Altamente correlacionados
+ require (car)
+ vif (mbolsa)
