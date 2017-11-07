@@ -1,0 +1,75 @@
+#comparacion de modelos
+##pretendemos seleccionar la mejora subconjunto de predictores
+#en este caso para la aplicacion del mrm tenemos 2 variables
+#independientes (calidad y capacidad) por lo que se popone comparar 3 modelos con la 
+#finalidad de aplicar el principio de parsimonia, conocer variables indep innecesarias
+#evitar multicolinealiada, es decir, que se tienen muchas variables intentando explicar 
+#el modelo. ante estas variables se pueden comparar 3 modelos
+#1.-precio~capacidad
+#2.-precio~calidad
+#3.-precio~calidad+capacidad
+
+####como seleccionar el mejor modelo###
+
+#criterio de informacion de Akaike (AIC)
+#el problema de utilizar R2 p'ara comparar el modelo, es en muchos casos
+#al añadir nuevas variables al modelo, esta medida crece.
+#si estamos decidiendocual de todos los modelos ajusta mejor a los 
+
+
+
+
+
+####aic=(n)(log(SCR/n))+2k
+#SCR= suma de cuadrados residuales
+#n numero de casos del modelo
+#k numero de variables independientes
+# el criterio que se utiliza para el AIC para elegir el mejor modelo
+#que tenga el menor valor de AIC
+
+calidad<-c(2,3,4,3,4,4,4,5,5,5)
+capa<-c(4330,5500,5500,4700,5200,5500,4700,5500,5800,5000)
+precio<-c(190,219,249,249,250,340,289,395,439,525)
+moch<-data.frame(precio,capa,calidad)
+mod1<-lm(precio~capa+calidad,data=moch)
+summary(mod1)
+#en los coeficientes observamos el estadistico T que solo tenemos significativa la var calidad.
+#tenemos un error estandar residual de 58.75
+
+step (mod1,direction="backward")
+#aqui podemos ver que el metodo step analizó 2 modelos
+#1)precio~capa+calidad con AIC=83.90
+#2)precio~calidadcon AIC=83.51
+
+##metodo both
+step(mod1,direction="both")
+
+
+#tenemos un resultado igual al backward por la forma que se construye el metodo de both
+
+step(mod1,direction="forward")
+#en este caso solo se muestra el modelo complejo pq inicia haciendo
+#pruebas con el modelo nulo y solo deja el modelocomplejo pq
+#es el que mayor AIC muestra...
+
+help(datasets)
+library(help="datasets")
+require(datasets);data(swiss);?swiss
+#aplicar el modelo con la variable dependiente fertility, a este modelo
+#tienen que agregarle 3 variables independientes, van a realizar una descripcion de la
+#funcion summary del modelo completo
+#(vardep=inde1+indep2+indep3) la base de datos que van a usar es swiss
+#una vez que hagan la descripcion del modelo completo, aplicar el criterio AIC
+#para comparar los modelos posibles de su modelo completo,
+#ya que hayan elegido un modelo con base en el AIC aplicarlo y describir la funcion summary
+#de su modelo segun AIC
+swiss
+mo<-data.frame(swiss)
+mod2<-lm(Fertility~Education+Agriculture+ Examination,data=mo)
+summary(mod2)
+step(mod2,direction="backward")
+step(mod2,direction="both")
+step(mod2,direction="forward")
+
+##los tres modelos dan el mismo resultado, porque se construyen de la misma forma
+##AIC=206.09
